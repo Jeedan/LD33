@@ -30,7 +30,7 @@ public class Monster : MonoBehaviour
         maxHealth = health;
 
         canvas = GameObject.Find("Canvas");
-        pool = new ObjectPooler();
+        pool = ObjectPoolManager.objectPool; //new ObjectPooler();
         pool.InitPool("floatDmg", floattxtPrefab, 4, true);    
     }
 

@@ -74,19 +74,25 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Assets\_Scripts\Ability.cs" />
     <Compile Include="Assets\_Scripts\BattleManager.cs" />
     <Compile Include="Assets\_Scripts\CooldownTimer.cs" />
+    <Compile Include="Assets\_Scripts\Entities\Entity.cs" />
+    <Compile Include="Assets\_Scripts\Entities\Player.cs" />
     <Compile Include="Assets\_Scripts\Experience.cs" />
     <Compile Include="Assets\_Scripts\FloatingText.cs" />
     <Compile Include="Assets\_Scripts\Monster.cs" />
+    <Compile Include="Assets\_Scripts\MoveInALine.cs" />
     <Compile Include="Assets\_Scripts\ObjectPool\Example\FireOnMouseClick.cs" />
     <Compile Include="Assets\_Scripts\ObjectPool\Example\MoveUp.cs" />
     <Compile Include="Assets\_Scripts\ObjectPool\ObjectPooler.cs" />
+    <Compile Include="Assets\_Scripts\Statemachine\BattleStates\BaseBattleState.cs" />
     <Compile Include="Assets\_Scripts\Statemachine\BattleStates\BattleIntro.cs" />
     <Compile Include="Assets\_Scripts\Statemachine\BattleStates\BattlePerformMove.cs" />
     <Compile Include="Assets\_Scripts\Statemachine\BattleStates\BattleSelectAction.cs" />
     <Compile Include="Assets\_Scripts\Statemachine\BattleStates\BattleSelectTarget.cs" />
     <Compile Include="Assets\_Scripts\Statemachine\BattleStates\BattleSwap.cs" />
+    <Compile Include="Assets\_Scripts\Statemachine\BattleStates\ObjectPoolManager.cs" />
     <Compile Include="Assets\_Scripts\Statemachine\IState.cs" />
     <Compile Include="Assets\_Scripts\Statemachine\StateMachine.cs" />
   </ItemGroup>

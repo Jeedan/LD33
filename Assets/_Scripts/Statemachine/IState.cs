@@ -3,7 +3,7 @@ using System.Collections;
 
 public interface IState
 {
-    void OnEnter(GameObject go);
+    void OnEnter();
     void OnExit();
     void OnUpdate();
 }

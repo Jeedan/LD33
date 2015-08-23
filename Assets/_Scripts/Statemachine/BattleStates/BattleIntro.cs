@@ -7,14 +7,25 @@ public class BattleIntro : IState
     public float introDelay = 2.0f;
     private float introTimer = 0.0f;
 
+    private GameObject battlemanagerGO;
     private BattleManager bm;
+    
+    public BattleIntro()
+    {
 
-    public void OnEnter(GameObject go)
+    }
+
+    public BattleIntro(GameObject go)
+    {
+        battlemanagerGO = go;
+
+        bm = battlemanagerGO.GetComponent<BattleManager>();
+    }    
+
+    public void OnEnter()
     {
         Debug.Log("OnEnter "+ this.ToString());
-
-        bm = go.GetComponent<BattleManager>();
-
+        
         bm.currStateText.text = "Current State: " + "Intro";
     }
 
@@ -30,7 +41,10 @@ public class BattleIntro : IState
         if (introTimer >= introDelay)
         {
             // currentState = BattleStates.SelectAction;
-            bm.SelectActionState();
+            //bm.SelectActionState();
+
+            bm.ChangeState("SelectAction");
+            //bm.PushState("SelectAction");
             introTimer = 0.0f;
         }
     }
