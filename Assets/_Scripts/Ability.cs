@@ -31,5 +31,6 @@ public class Ability : MonoBehaviour
         MoveInALine m = eff.GetComponent<MoveInALine>();
         m.direction = dir.normalized;
         m.ability = this;
+
     }
 }

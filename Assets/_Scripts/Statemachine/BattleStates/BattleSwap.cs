@@ -10,9 +10,6 @@ public class BattleSwap : IState
     private GameObject battlemanagerGO;
     private BattleManager bm;
 
-    private ObjectPooler pool;
-    private GameObject canvasGO;
-
     Entity attacker;
 
     public BattleSwap()
@@ -24,8 +21,6 @@ public class BattleSwap : IState
     {
         battlemanagerGO = go;
         bm = battlemanagerGO.GetComponent<BattleManager>();
-        pool = ObjectPoolManager.objectPool;
-        canvasGO = GameObject.Find("Canvas");
 
         // pool.InitPool("floatDmg", floattxtPrefab, 4, true);
     }
@@ -36,10 +31,7 @@ public class BattleSwap : IState
 
         bm.currStateText.text = "Current State: " + "Swap Turn";
 
-        delayTimer += Time.deltaTime;
-        //bm.playerHealth--;
-        //SpawnFloatText(1);
-        Debug.Log("Monster deals damage to player health is now " + bm.playerHealth);
+        Debug.Log("Monster deals damage to player health is now " + bm.player.health);
 
         Entity ent = bm.player;
 
@@ -48,7 +40,7 @@ public class BattleSwap : IState
         if (attacker.isReady)
         {
             attacker.DealDamage(ent);
-            bm.InitFloatText(attacker.baseDamage.ToString(), bm.player.transform.position);
+            bm.SpawnFloatText(attacker.baseDamage.ToString(), bm.player.transform.position);
         }
 
         attacker.readyTime = Random.Range(3.0f, 10.0f);

@@ -3,7 +3,7 @@ using System.Collections;
 
 public class BattlePerformMove : IState
 {
-    public float delay = 2.0f;
+    public float delay = 1.0f;
     private float delayTimer = 0.0f;
 
     private GameObject battlemanagerGO;
@@ -12,6 +12,8 @@ public class BattlePerformMove : IState
     private Player player;
     private Entity targetEntity;
 
+    private Quaternion startRotation;
+    float prevDmg;
     public BattlePerformMove()
     {
 
@@ -29,14 +31,28 @@ public class BattlePerformMove : IState
 
         bm.currStateText.text = "Current State: " + "Perform Move";
         player = bm.player;
+        startRotation = player.transform.rotation;
 
         // TODO bm.currentAttacker.DoMove();
         targetEntity = bm.selectedTarget.GetComponent<Entity>();
 
-        player.attack.SetTarget(bm.selectedTarget);
-        player.attack.SpawnEffect();
-       // bm.infoPanel.SetActive(true);
-       // bm.healthLabel.text = targetEntity.health.ToString() + " / " + targetEntity.MaxHealth;
+        prevDmg = player.baseDamage;
+        if (player.currentAttack == 0)
+        {
+            float dmg = player.baseDamage * 1.5f;
+            player.baseDamage = (int)dmg;
+            player.attack.SetTarget(bm.selectedTarget);
+            player.attack.SpawnEffect();
+        }
+        else if (player.currentAttack == 1)
+        {
+            player.PerformAOE(bm.selectedTarget.transform.position, bm);
+
+        }
+
+
+        // bm.infoPanel.SetActive(true);
+        // bm.healthLabel.text = targetEntity.health.ToString() + " / " + targetEntity.MaxHealth;
         //bm.DealDamage();
 
         delayTimer = 0.0f;
@@ -44,12 +60,28 @@ public class BattlePerformMove : IState
 
     public void OnExit()
     {
-        player.DealDamage(targetEntity);
-        bm.playerTimer = -1.0f;
 
-        player.attackTimer = 0;
+        if (player.currentAttack == 0)
+        {
+            player.DealDamage(targetEntity);
+            player.readyTime = player.speed;
+            player.baseDamage = prevDmg;
+        }
+        else
+        {
+            player.readyTime = 3.0f;
+        }
 
+
+        player.transform.rotation = startRotation;
         delayTimer = 0.0f;
+
+        player.UpdateExperience();
+        bm.UpdatePlayerLevelLabels();
+        // spawn float exp txt
+        if (targetEntity.health <= 0.0f)
+            bm.SpawnFloatText(targetEntity.expReward.ToString("0") + "xp", player.gameObject.transform.position + Vector3.right);
+
         Debug.Log("OnExit " + this.ToString());
     }
 
@@ -59,20 +91,24 @@ public class BattlePerformMove : IState
 
         if (player.attack.isDone)
         {
-            bm.InitFloatText(player.baseDamage.ToString(), bm.selectedTarget.transform.position);
-
+            bm.SpawnFloatText(player.baseDamage.ToString(), bm.selectedTarget.transform.position);
             //    bm.healthLabel.text = targetEntity.health.ToString() + " / " + targetEntity.MaxHealth;
 
             bm.PushState("SelectAction");
         }
 
-        delayTimer += Time.deltaTime;
-        if (delayTimer >= delay)
+        if (player.currentAttack == 1)
         {
-            //bm.SwapState();
-            // TODO move back to SelectAction state
-           // bm.PushState("SelectAction");
-            delayTimer = 0.0f;
+            delayTimer += Time.deltaTime;
+            if (delayTimer >= delay)
+            {
+                bm.PushState("SelectAction");
+
+                //bm.SwapState();
+                // TODO move back to SelectAction state
+                // bm.PushState("SelectAction");
+                delayTimer = 0.0f;
+            }
         }
     }
 }

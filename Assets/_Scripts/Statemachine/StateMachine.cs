@@ -29,7 +29,6 @@ public class StateMachine
 
     public void OnUpdate()
     {
-
         currentState().OnUpdate();
     }
 

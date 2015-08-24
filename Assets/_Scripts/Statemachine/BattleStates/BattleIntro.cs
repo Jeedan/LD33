@@ -1,10 +1,11 @@
 ﻿using UnityEngine;
+using UnityEngine.UI;
 using System.Collections;
 using System;
 
 public class BattleIntro : IState
 {
-    public float introDelay = 2.0f;
+    public float introDelay = 4.0f;
     private float introTimer = 0.0f;
 
     private GameObject battlemanagerGO;
@@ -25,12 +26,14 @@ public class BattleIntro : IState
     public void OnEnter()
     {
         Debug.Log("OnEnter "+ this.ToString());
-        
+
+        bm.introDialoguePanel.gameObject.SetActive(true);
         bm.currStateText.text = "Current State: " + "Intro";
     }
 
     public void OnExit()
     {
+        bm.introDialoguePanel.gameObject.SetActive(false);
         Debug.Log("OnExit " + this.ToString());
     }
 

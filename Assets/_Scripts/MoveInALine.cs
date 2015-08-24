@@ -8,6 +8,12 @@ public class MoveInALine : MonoBehaviour
     public Vector3 direction;
 
     public Ability ability;
+    TrailRenderer trail;
+    void Start()
+    {
+
+        trail = gameObject.GetComponentInChildren<TrailRenderer>();
+    }
 
     // Update is called once per frame
     void Update()
@@ -17,7 +23,10 @@ public class MoveInALine : MonoBehaviour
 
     public void ReachedTarget()
     {
+        TrailRenderer trail = gameObject.GetComponentInChildren<TrailRenderer>();
+        trail.time = 0.25f;
         ability.isDone = true;
+        trail.time = 0.8f;
         gameObject.SetActive(false);
     }
 

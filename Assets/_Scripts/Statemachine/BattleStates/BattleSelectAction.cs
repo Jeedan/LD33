@@ -29,9 +29,12 @@ public class BattleSelectAction : IState
     public void OnEnter()
     {
         Debug.Log("OnEnter " + this.ToString());
+        AreMonstersAlive();
         player = bm.player;
 
         player.UpdateActionButton(bm.SetStateToSelectTarget);
+        if (bm.Selection)
+            bm.Selection.SetActive(false);
 
         //bm.attackBttn.onClick.RemoveAllListeners();
         //bm.attackBttn.onClick.AddListener(bm.SetStateToSelectTarget); // used to be Attack
@@ -39,13 +42,16 @@ public class BattleSelectAction : IState
         //bm.attackBttn.interactable = false;
 
         bm.currStateText.text = "Current State: " + "Select Action";
-
+        bm.UpdatePlayerLevelLabels();
+        player.UpdateHealthLabel();
+        player.UpdateTimerLabel();
         bm.selectedTarget = null;
         attacker = null;
     }
 
     public void OnExit()
     {
+        delayTimer = 0.0f;
         //bm.attackBttn.interactable = false;
         Debug.Log("OnExit " + this.ToString());
     }
@@ -54,58 +60,75 @@ public class BattleSelectAction : IState
     {
         // TODO ATTACK TIMER
         //HoverOverEnemy();
-        delayTimer += Time.deltaTime;
-
         AreMonstersReady();
-      
+
         IsPlayerReady();
+
+        if (player.isDead)
+        {
+            bm.ChangeState("GameOver");
+        }
+    }
+
+    void AreMonstersAlive()
+    {
+        int deathCounter = 0;
+        for(int i=0; i < bm.entities.Count; i++)
+        {
+            if (bm.entities[i].isDead)
+            {
+                deathCounter++;
+            }
+        }
+
+        if(deathCounter >= bm.entities.Count)
+        {
+            bm.ChangeState("WaveIncrease");
+            deathCounter = 0;
+        }
     }
 
     void AreMonstersReady()
     {
+        float aTime = Mathf.Infinity;
 
-        for (int i = 0; i < bm.entities.Length; i++)
+        for (int i = 0; i < bm.entities.Count; i++)
         {
             if (bm.entities[i].isDead) continue;
 
             if (!bm.entities[i].isReady)
             {
-                bm.entities[i].readyTime -= Time.deltaTime;
-                bm.entities[i].UpdateTimerLabel();
+                bm.entities[i].readyTime -= Time.deltaTime;//0.01f;
             }
 
 
+            bm.entities[i].UpdateTimerLabel();
             if (bm.entities[i].attackTimer >= bm.entities[i].readyTime)
             {
                 // TODO switch state to attack state, set attacker to be the monster.
                 bm.entities[i].isReady = true;
 
-                bm.attacker = attacker;
+                //bm.attacker = attacker;
                 // bm.entities[i].attackTimer = bm.entities[i].readyTime;
             }
-        }
 
-        float aTime = Mathf.Infinity;
-
-        for (int j = 0; j < bm.entities.Length; j++)
-        {
-            if (bm.entities[j].isReady)
+            if (bm.entities[i].isReady)
             {
-                float tempTime = bm.entities[j].attackTimer;
+                float tempTime = bm.entities[i].readyTime;
                 if (tempTime <= aTime)
                 {
-                    attacker = bm.entities[j];
+                    attacker = bm.entities[i];
                 }
+
+                delayTimer += Time.deltaTime;
             }
         }
-
 
         if (delayTimer >= delay)
         {
             if (attacker != null)
             {
                 bm.attacker = attacker;
-                delayTimer = 0.0f;
                 bm.PushState("Swap");
             }
         }
@@ -127,7 +150,7 @@ public class BattleSelectAction : IState
     {
 
         if (!player.isReady)
-            player.attackTimer += Time.deltaTime;
+            player.readyTime -= Time.deltaTime;
 
         player.UpdateTimerLabel();
         if (player.attackTimer >= player.readyTime)
@@ -142,34 +165,5 @@ public class BattleSelectAction : IState
         {
             player.isReady = false;
         }
-    }
-
-    void HoverOverEnemy()
-    {
-        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-        RaycastHit hit;
-        if (Physics.Raycast(ray, out hit, Mathf.Infinity, bm.interactMask))
-        {
-            hoverTarget = hit.transform.gameObject;
-        }
-        else
-        {
-            hoverTarget = null;
-        }
-
-        if (hoverTarget)
-        {
-            //bm.PerformMoveState();
-            //            bm.infoPanel.SetActive(true);
-            Entity targetEntity = hoverTarget.GetComponent<Entity>();
-            bm.UpdateTimerLabels(targetEntity.attackTimer, player.attackTimer);
-
-            //          bm.healthLabel.text = targetEntity.health.ToString() + " / " + targetEntity.MaxHealth;
-        }
-        else
-        {
-            //            bm.infoPanel.SetActive(false);
-        }
-
     }
 }
